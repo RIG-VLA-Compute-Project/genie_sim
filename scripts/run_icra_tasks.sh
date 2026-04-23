@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run all icra_*.yaml configs under source/geniesim/config/ in order.
-# Usage: ./scripts/run_icra_tasks.sh [--infer-host HOST:PORT]
+# Usage: ./scripts/run_icra_tasks.sh [--infer-host HOST:PORT] [extra app.py args...]
 
 # Paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,7 +11,10 @@ OUTPUT_DIR="${PROJECT_ROOT}/output"
 BENCHMARK_DIR="${OUTPUT_DIR}/benchmark"
 
 # Parse arguments
+# Parse arguments
 INFER_HOST=""
+APP_ARGS=()
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --infer-host)
@@ -19,9 +22,8 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         *)
-            echo "Unknown argument: $1"
-            echo "Usage: $0 [--infer-host HOST:PORT]"
-            exit 1
+            APP_ARGS+=("$1")
+            shift
             ;;
     esac
 done
@@ -101,7 +103,7 @@ for YAML_PATH in "${ICRA_YAMLS[@]}"; do
     echo -e "  Config: ${YAML_PATH}\n"
 
     cd "${PROJECT_ROOT}"
-    /isaac-sim/python.sh source/geniesim/app/app.py --config "${YAML_PATH}"
+    /isaac-sim/python.sh source/geniesim/app/app.py --config "${YAML_PATH}" "${APP_ARGS[@]}"
 
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Successfully completed: ${CONFIG_NAME}${NC}\n"
