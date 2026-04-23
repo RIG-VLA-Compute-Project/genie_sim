@@ -18,4 +18,4 @@ docker run -it --name pi05_infer\
     -v $CURRENT_DIR/openpi:/root/openpi:rw \
     -w /root/openpi \
     openpi_server:latest \
-    bash ./scripts/entrypoint.sh
+    bash
